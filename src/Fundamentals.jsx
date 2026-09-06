@@ -19,10 +19,6 @@ export default function Fundamentals() {
       <EvpnArchitecture />
       <EvpnPacketWalk />
 
-      <h2>Notes / To-Add Later</h2>
-      <ul>
-        <li>Add real topology from video (whiteboard) once available</li>
-      </ul>
     </div>
   )
 }

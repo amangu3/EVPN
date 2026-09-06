@@ -100,60 +100,7 @@ export default function L3RoutingLimitation() {
       </section>
 
       {/* Point 3: VM mobility depends on stretched L2 */}
-      <section style={{ marginBottom: '50px' }}>
-        <h3>3. VM Mobility Also Relies on a Stretched L2 Domain</h3>
-        <p>
-          Live VM migration (e.g. vMotion) is built on one core assumption: the VM keeps its{' '}
-          <b>same IP and MAC address</b> when it moves from one physical host to another — even
-          if that host sits in a different rack. It's worth separating two different networks
-          here: the <b>migration transfer network</b> (used by the hypervisors to copy VM
-          memory/state between hosts) can actually be L3-routed in modern vMotion. But the{' '}
-          <b>VM Network</b> itself — the segment the VM's own IP/MAC actually lives on — has to
-          stay <b>L2-only</b>. That's the piece that must be part of the same broadcast domain
-          on both source and destination, otherwise the VM can't keep its IP/MAC seamlessly (no
-          dropped sessions, no re-ARPing) after the move. If that L2 domain doesn't extend
-          across racks, VM mobility is effectively limited to a single rack — which defeats the
-          purpose.
-        </p>
-        <style>
-          {`
-            @keyframes l3MoveGlow {
-              0%, 100% { opacity: 1; }
-              50% { opacity: 0.4; }
-            }
-            .vm-move { animation: l3MoveGlow 1.6s ease-in-out infinite; }
-          `}
-        </style>
-        <svg viewBox="0 0 700 220" style={{ width: '100%', maxWidth: '700px', background: '#fafafa', border: '1px solid #eee', borderRadius: '8px' }}>
-          <rect x="60" y="60" width="160" height="60" rx="6" fill="#3498db" />
-          <text x="75" y="95" fontSize="12" fill="#fff">Host - Rack1</text>
-
-          <rect x="480" y="60" width="160" height="60" rx="6" fill="#3498db" />
-          <text x="495" y="95" fontSize="12" fill="#fff">Host - Rack5</text>
-
-          <rect x="30" y="10" width="620" height="150" rx="6" fill="none" stroke="#2ecc71" strokeWidth="2" strokeDasharray="6,4" />
-          <text x="280" y="180" fontSize="11" fill="#2ecc71">Same L2 domain stretched across racks</text>
-
-          <circle className="vm-move" cx="140" cy="90" r="14" fill="#f1c40f" />
-          <text x="105" y="140" fontSize="10" fill="#333">VM (10.1.1.50)</text>
-
-          <line className="vm-move" x1="140" y1="90" x2="560" y2="90" stroke="#f1c40f" strokeWidth="2" strokeDasharray="6,4" />
-          <text x="280" y="80" fontSize="11" fill="#333">live migration &rarr;</text>
-
-          <circle cx="560" cy="90" r="14" fill="none" stroke="#f1c40f" strokeWidth="2" strokeDasharray="3,2" />
-          <text x="525" y="140" fontSize="10" fill="#333">same IP after move</text>
-        </svg>
-        <div style={solutionBox}>
-          <b>Putting it together:</b> pure L3 routing is the right model for stateless
-          cloud-native workloads, but legacy applications and VM mobility both still need L2
-          adjacency across racks/sites. The answer isn't "L2 vs L3" — it's a fabric that gives
-          <b> pure L3 underlay everywhere</b>, while still offering <b>L2 extension on top</b>{' '}
-          only where it's actually needed. That's exactly the gap <b>EVPN</b> fills: it rides
-          over a routed (L3) underlay, but uses <b>VXLAN + BGP EVPN control plane</b> to stretch
-          L2 domains across racks without STP, without vPC peer-links, and without the loop and
-          scaling limits we saw earlier.
-        </div>
-      </section>
+ 
     </>
   )
 }
